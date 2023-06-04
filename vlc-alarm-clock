@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+have_time=0
+TIME=""
+have_day=0
+DAY=""
+have_month=0
+MONTH=""
+have_audio=0
+AUDIO=""
+
+args=$(getopt -o a:t:d:m: -- "$@")
+if [ $? -ne 0 ] ; then
+	usage
+	exit 1
+fi
+
+eval set -- "$args"
+while [ $# -gt 0 ]
+do
+	case "$1" in
+	-a)
+		AUDIO=$2
+		have_audio=1
+		shift
+		;;
+	-t)
+		TIME=$2
+		have_time=1
+		shift
+		;;
+	-d)
+		DAY=$2
+		have_day=1
+		shift
+		;;
+	-m)
+		MONTH=$2
+		have_month=1
+		shift
+		;;
+	-v)
+		verbose=1
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		echo "Invalid option: $1"
+		exit 1
+		;;
+	esac
+	shift
+done
+
+if [ ! "$have_audio" -gt 0 ] ; then
+	echo "No audio file specified. Please add -a <path_to_audio_file>"
+	exit 1
+fi
+
+if [ ! "$have_time" -gt 0 ] ; then
+	echo "No time specified. Please add -t <time>"
+	exit 1
+fi
+
+if [ ! "$have_month" -gt 0 ] ; then
+	echo "No month specified. Please add -m <month>"
+	exit 1
+fi
+
+if [ ! "$have_day" -gt 0 ] ; then
+	echo "No day specified. Please add -d <day>"
+	exit 1
+fi
+
+#bounds
+if [ "$MONTH" -gt 12 ] ; then
+	echo "month is wrong"
+	exit 1
+fi
+if [ "$DAY" -gt 31 ] ; then
+	echo "day is wrong"
+	exit 1
+fi
+
+alarmtime=$(date --date="${MONTH}/${DAY}/2023 ${TIME}:00" +"%s")
+date --date=@$alarmtime +"%c"
+sudo rtcwake --mode no --time $alarmtime
+while true ; do
+	sleep 30
+	if (date +"%R"| grep ${TIME}); then
+		killall vlc
+		pactl set-sink-mute 0 0
+		pactl set-sink-volume 0 100%
+		sleep 1
+		cvlc ${AUDIO}
+		exit 0
+	fi
+done
