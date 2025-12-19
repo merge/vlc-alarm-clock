@@ -1,0 +1,2 @@
+* if -a not given, use alarm.mp3 if found
+* improve time cmdline. simply use next day of same month if no day.
