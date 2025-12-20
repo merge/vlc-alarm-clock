@@ -86,7 +86,7 @@ if [ "$DAY" -gt 31 ] ; then
 	exit 1
 fi
 
-alarmtime=$(date --date="${MONTH}/${DAY}/2023 ${TIME}:00" +"%s")
+alarmtime=$(date --date="${MONTH}/${DAY}/$(date +%Y) ${TIME}:00" +"%s")
 date --date=@$alarmtime +"%c"
 sudo rtcwake --mode no --time $alarmtime
 while true ; do
