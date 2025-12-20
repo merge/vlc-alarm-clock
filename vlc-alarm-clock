@@ -10,8 +10,7 @@ DAY=""
 MONTH=""
 AUDIO=""
 
-args=$(getopt -o a:t:d:m: -- "$@")
-if [ $? -ne 0 ] ; then
+if ! args=$(getopt -o a:t:d:m: -- "$@") ; then
 	usage
 	exit 1
 fi
@@ -37,9 +36,6 @@ do
 	-m)
 		MONTH=$2
 		shift
-		;;
-	-v)
-		verbose=1
 		;;
 	--)
 		shift
@@ -90,15 +86,14 @@ fi
 # get format for rtcwake
 alarmtime=$(date --date="${MONTH}/${DAY}/$(date +%Y) ${TIME}:00" +"%s")
 # sanity check
-date --date=@$alarmtime +"%c"
-if [ $? -ne 0 ] ; then
+if ! date --date=@$alarmtime +"%c" ; then
 	echo -e "${RED}couldn't set alarm time${NC}"
 	exit 1
 fi
 
 command -v cvlc >/dev/null 2>&1 || { echo -e >&2 "${RED}Please install vlc.${NC}"; exit 1; }
 
-sudo rtcwake --mode no --time $alarmtime
+sudo rtcwake --mode no --time "$alarmtime"
 while true ; do
 	sleep 30
 	if (date +"%R"| grep ${TIME}); then
@@ -106,7 +101,7 @@ while true ; do
 		amixer set 'Master' unmute
 		amixer set 'Master' 100%
 		sleep 1
-		cvlc ${AUDIO}
+		cvlc "${AUDIO}"
 		exit 0
 	fi
 done
