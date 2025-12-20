@@ -7,7 +7,6 @@ have_time=0
 TIME=""
 have_day=0
 DAY=""
-have_month=0
 MONTH=""
 AUDIO=""
 
@@ -37,7 +36,6 @@ do
 		;;
 	-m)
 		MONTH=$2
-		have_month=1
 		shift
 		;;
 	-v)
@@ -69,9 +67,9 @@ if [ ! "$have_time" -gt 0 ] ; then
 	exit 1
 fi
 
-if [ ! "$have_month" -gt 0 ] ; then
-	echo "No month specified. Please add -m <month>"
-	exit 1
+if [ -z "$MONTH" ] ; then
+	MONTH=$(date +%m)
+	echo "Using month $MONTH (use -m for another)"
 fi
 
 if [ ! "$have_day" -gt 0 ] ; then
