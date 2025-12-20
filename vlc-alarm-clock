@@ -87,8 +87,17 @@ if [ "$DAY" -gt 31 ] ; then
 	exit 1
 fi
 
+# get format for rtcwake
 alarmtime=$(date --date="${MONTH}/${DAY}/$(date +%Y) ${TIME}:00" +"%s")
+# sanity check
 date --date=@$alarmtime +"%c"
+if [ $? -ne 0 ] ; then
+	echo -e "${RED}couldn't set alarm time${NC}"
+	exit 1
+fi
+
+command -v cvlc >/dev/null 2>&1 || { echo -e >&2 "${RED}Please install vlc.${NC}"; exit 1; }
+
 sudo rtcwake --mode no --time $alarmtime
 while true ; do
 	sleep 30
