@@ -1,2 +1,2 @@
-* improve time cmdline. simply use next day of same month if no day.
-* fix timezone issues
+* check for "any" playback program, don't hardcode one
+* can we simplify usage?
