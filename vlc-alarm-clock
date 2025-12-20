@@ -6,7 +6,6 @@ have_day=0
 DAY=""
 have_month=0
 MONTH=""
-have_audio=0
 AUDIO=""
 
 args=$(getopt -o a:t:d:m: -- "$@")
@@ -21,7 +20,6 @@ do
 	case "$1" in
 	-a)
 		AUDIO=$2
-		have_audio=1
 		shift
 		;;
 	-t)
@@ -54,9 +52,13 @@ do
 	shift
 done
 
-if [ ! "$have_audio" -gt 0 ] ; then
-	echo "No audio file specified. Please add -a <path_to_audio_file>"
-	exit 1
+if [ -z "$AUDIO" ] ; then
+	if [ -f ./alarm.mp3 ] ; then
+		AUDIO="./alarm.mp3"
+	else
+		echo "No audio file. Please add -a <path_to_audio_file>"
+		exit 1
+	fi
 fi
 
 if [ ! "$have_time" -gt 0 ] ; then
