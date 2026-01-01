@@ -3,12 +3,14 @@
 RED='\033[0;31m'
 NC='\033[0m'
 
-have_time=0
 TIME=""
-have_day=0
 DAY=""
 MONTH=""
 AUDIO=""
+
+usage () {
+	echo "$0 -a audiofile -t time -d day -m month"
+}
 
 if ! args=$(getopt -o a:t:d:m: -- "$@") ; then
 	usage
@@ -25,12 +27,10 @@ do
 		;;
 	-t)
 		TIME=$2
-		have_time=1
 		shift
 		;;
 	-d)
 		DAY=$2
-		have_day=1
 		shift
 		;;
 	-m)
@@ -58,19 +58,28 @@ if [ -z "$AUDIO" ] ; then
 	fi
 fi
 
-if [ ! "$have_time" -gt 0 ] ; then
-	echo "No time specified. Please add -t <time>"
+if [ -z "$TIME" ] ; then
+	read -p "Enter time: " TIME
+fi
+if [ -z $TIME ] ; then
+	echo "no time specified."
+	exit 1
+fi
+
+if [ -z $DAY ] ; then
+	read -p "Enter day: " DAY
+fi
+if [ -z $DAY ] ; then
+	echo "no day specified"
 	exit 1
 fi
 
 if [ -z "$MONTH" ] ; then
+	read -p "Enter month: " MONTH
+fi
+if [ -z "$MONTH" ] ; then
 	MONTH=$(date +%m)
 	echo "Using month $MONTH (use -m for another)"
-fi
-
-if [ ! "$have_day" -gt 0 ] ; then
-	echo "No day specified. Please add -d <day>"
-	exit 1
 fi
 
 #bounds
