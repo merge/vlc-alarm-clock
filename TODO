@@ -1,2 +1,2 @@
 * check for "any" playback program, don't hardcode one
-* can we simplify usage?
+* can we become a non-blocking start / stop service?
